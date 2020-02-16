@@ -12,7 +12,7 @@ import (
 //
 // Since obs-websocket version: 0.3.
 //
-// https://github.com/Palakis/obs-websocket/blob/4.3-maintenance/docs/generated/protocol.md#startstoprecording
+// https://github.com/Palakis/obs-websocket/blob/4.x-current/docs/generated/protocol.md#startstoprecording
 type StartStopRecordingRequest struct {
 	_request `json:",squash"`
 	response chan StartStopRecordingResponse
@@ -90,7 +90,7 @@ func (r StartStopRecordingRequest) SendReceive(c Client) (StartStopRecordingResp
 //
 // Since obs-websocket version: 0.3.
 //
-// https://github.com/Palakis/obs-websocket/blob/4.3-maintenance/docs/generated/protocol.md#startstoprecording
+// https://github.com/Palakis/obs-websocket/blob/4.x-current/docs/generated/protocol.md#startstoprecording
 type StartStopRecordingResponse struct {
 	_response `json:",squash"`
 }
@@ -100,7 +100,7 @@ type StartStopRecordingResponse struct {
 //
 // Since obs-websocket version: 4.1.0.
 //
-// https://github.com/Palakis/obs-websocket/blob/4.3-maintenance/docs/generated/protocol.md#startrecording
+// https://github.com/Palakis/obs-websocket/blob/4.x-current/docs/generated/protocol.md#startrecording
 type StartRecordingRequest struct {
 	_request `json:",squash"`
 	response chan StartRecordingResponse
@@ -178,7 +178,7 @@ func (r StartRecordingRequest) SendReceive(c Client) (StartRecordingResponse, er
 //
 // Since obs-websocket version: 4.1.0.
 //
-// https://github.com/Palakis/obs-websocket/blob/4.3-maintenance/docs/generated/protocol.md#startrecording
+// https://github.com/Palakis/obs-websocket/blob/4.x-current/docs/generated/protocol.md#startrecording
 type StartRecordingResponse struct {
 	_response `json:",squash"`
 }
@@ -188,7 +188,7 @@ type StartRecordingResponse struct {
 //
 // Since obs-websocket version: 4.1.0.
 //
-// https://github.com/Palakis/obs-websocket/blob/4.3-maintenance/docs/generated/protocol.md#stoprecording
+// https://github.com/Palakis/obs-websocket/blob/4.x-current/docs/generated/protocol.md#stoprecording
 type StopRecordingRequest struct {
 	_request `json:",squash"`
 	response chan StopRecordingResponse
@@ -266,7 +266,7 @@ func (r StopRecordingRequest) SendReceive(c Client) (StopRecordingResponse, erro
 //
 // Since obs-websocket version: 4.1.0.
 //
-// https://github.com/Palakis/obs-websocket/blob/4.3-maintenance/docs/generated/protocol.md#stoprecording
+// https://github.com/Palakis/obs-websocket/blob/4.x-current/docs/generated/protocol.md#stoprecording
 type StopRecordingResponse struct {
 	_response `json:",squash"`
 }
@@ -275,7 +275,7 @@ type StopRecordingResponse struct {
 //
 // Since obs-websocket version: 4.1.0.
 //
-// https://github.com/Palakis/obs-websocket/blob/4.3-maintenance/docs/generated/protocol.md#setrecordingfolder
+// https://github.com/Palakis/obs-websocket/blob/4.x-current/docs/generated/protocol.md#setrecordingfolder
 type SetRecordingFolderRequest struct {
 	// Path of the recording folder.
 	// Required: Yes.
@@ -357,7 +357,7 @@ func (r SetRecordingFolderRequest) SendReceive(c Client) (SetRecordingFolderResp
 //
 // Since obs-websocket version: 4.1.0.
 //
-// https://github.com/Palakis/obs-websocket/blob/4.3-maintenance/docs/generated/protocol.md#setrecordingfolder
+// https://github.com/Palakis/obs-websocket/blob/4.x-current/docs/generated/protocol.md#setrecordingfolder
 type SetRecordingFolderResponse struct {
 	_response `json:",squash"`
 }
@@ -366,7 +366,7 @@ type SetRecordingFolderResponse struct {
 //
 // Since obs-websocket version: 4.1.0.
 //
-// https://github.com/Palakis/obs-websocket/blob/4.3-maintenance/docs/generated/protocol.md#getrecordingfolder
+// https://github.com/Palakis/obs-websocket/blob/4.x-current/docs/generated/protocol.md#getrecordingfolder
 type GetRecordingFolderRequest struct {
 	_request `json:",squash"`
 	response chan GetRecordingFolderResponse
@@ -444,7 +444,7 @@ func (r GetRecordingFolderRequest) SendReceive(c Client) (GetRecordingFolderResp
 //
 // Since obs-websocket version: 4.1.0.
 //
-// https://github.com/Palakis/obs-websocket/blob/4.3-maintenance/docs/generated/protocol.md#getrecordingfolder
+// https://github.com/Palakis/obs-websocket/blob/4.x-current/docs/generated/protocol.md#getrecordingfolder
 type GetRecordingFolderResponse struct {
 	// Path of the recording folder.
 	// Required: Yes.

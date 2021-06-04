@@ -22,7 +22,7 @@ type ListOutputsRequest struct {
 func NewListOutputsRequest() ListOutputsRequest {
 	return ListOutputsRequest{
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "ListOutputs",
 			err:   make(chan error, 1),
 		},
@@ -35,7 +35,7 @@ func (r *ListOutputsRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -116,7 +116,7 @@ func NewGetOutputInfoRequest(outputName string) GetOutputInfoRequest {
 	return GetOutputInfoRequest{
 		outputName,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "GetOutputInfo",
 			err:   make(chan error, 1),
 		},
@@ -129,7 +129,7 @@ func (r *GetOutputInfoRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -188,11 +188,14 @@ func (r GetOutputInfoRequest) SendReceive(c Client) (GetOutputInfoResponse, erro
 type GetOutputInfoResponse struct {
 	// Output info.
 	// Required: Yes.
-	OutputInfo map[string]interface{} `json:"outputInfo"`
+	OutputInfo interface{} `json:"outputInfo"`
 	_response  `json:",squash"`
 }
 
-// StartOutputRequest : Start an output.
+// StartOutputRequest :
+//
+// Note: Controlling outputs is an experimental feature of obs-websocket
+// Some plugins which add outputs to OBS may not function properly when they are controlled in this way.
 //
 // Since obs-websocket version: 4.7.0.
 //
@@ -210,7 +213,7 @@ func NewStartOutputRequest(outputName string) StartOutputRequest {
 	return StartOutputRequest{
 		outputName,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "StartOutput",
 			err:   make(chan error, 1),
 		},
@@ -223,7 +226,7 @@ func (r *StartOutputRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -283,7 +286,10 @@ type StartOutputResponse struct {
 	_response `json:",squash"`
 }
 
-// StopOutputRequest : Stop an output.
+// StopOutputRequest :
+//
+// Note: Controlling outputs is an experimental feature of obs-websocket
+// Some plugins which add outputs to OBS may not function properly when they are controlled in this way.
 //
 // Since obs-websocket version: 4.7.0.
 //
@@ -308,7 +314,7 @@ func NewStopOutputRequest(
 		outputName,
 		force,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "StopOutput",
 			err:   make(chan error, 1),
 		},
@@ -321,7 +327,7 @@ func (r *StopOutputRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}

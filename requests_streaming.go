@@ -98,20 +98,23 @@ type GetStreamingStatusResponse struct {
 	// Current recording status.
 	// Required: Yes.
 	Recording bool `json:"recording"`
+	// If recording is paused.
+	// Required: Yes.
+	RecordingPaused bool `json:"recording-paused"`
+	// Always false.
+	// Retrocompatibility with OBSRemote.
+	// Required: Yes.
+	PreviewOnly bool `json:"preview-only"`
 	// Time elapsed since streaming started (only present if currently streaming).
 	// Required: No.
 	StreamTimecode string `json:"stream-timecode"`
 	// Time elapsed since recording started (only present if currently recording).
 	// Required: No.
 	RecTimecode string `json:"rec-timecode"`
-	// Always false.
-	// Retrocompatibility with OBSRemote.
-	// Required: Yes.
-	PreviewOnly bool `json:"preview-only"`
 	_response   `json:",squash"`
 }
 
-// StartStopStreamingRequest : Toggle streaming on or off.
+// StartStopStreamingRequest : Toggle streaming on or off (depending on the current stream state).
 //
 // Since obs-websocket version: 0.3.
 //
@@ -206,7 +209,7 @@ type StartStopStreamingResponse struct {
 // https://github.com/Palakis/obs-websocket/blob/4.x-current/docs/generated/protocol.md#startstreaming
 type StartStreamingRequest struct {
 	// Special stream configuration.
-	// Please note: these won't be saved to OBS' configuration.
+	// Note: these won't be saved to OBS' configuration.
 	// Required: No.
 	Stream map[string]interface{} `json:"stream"`
 	// If specified ensures the type of stream matches the given type (usually 'rtmp_custom' or 'rtmp_common').
@@ -229,13 +232,13 @@ type StartStreamingRequest struct {
 	StreamSettingsKey string `json:"stream.settings.key"`
 	// Indicates whether authentication should be used when connecting to the streaming server.
 	// Required: No.
-	StreamSettingsUseAuth bool `json:"stream.settings.use-auth"`
+	StreamSettingsUseAuth bool `json:"stream.settings.use_auth"`
 	// If authentication is enabled, the username for the streaming server.
-	// Ignored if `use-auth` is not set to `true`.
+	// Ignored if `use_auth` is not set to `true`.
 	// Required: No.
 	StreamSettingsUsername string `json:"stream.settings.username"`
 	// If authentication is enabled, the password for the streaming server.
-	// Ignored if `use-auth` is not set to `true`.
+	// Ignored if `use_auth` is not set to `true`.
 	// Required: No.
 	StreamSettingsPassword string `json:"stream.settings.password"`
 	_request               `json:",squash"`
@@ -450,7 +453,7 @@ type SetStreamSettingsRequest struct {
 	SettingsKey string `json:"settings.key"`
 	// Indicates whether authentication should be used when connecting to the streaming server.
 	// Required: No.
-	SettingsUseAuth bool `json:"settings.use-auth"`
+	SettingsUseAuth bool `json:"settings.use_auth"`
 	// The username for the streaming service.
 	// Required: No.
 	SettingsUsername string `json:"settings.username"`
@@ -466,7 +469,7 @@ type SetStreamSettingsRequest struct {
 
 // NewSetStreamSettingsRequest returns a new SetStreamSettingsRequest.
 func NewSetStreamSettingsRequest(
-	_type string,
+	Type_ string,
 	settings map[string]interface{},
 	settingsServer string,
 	settingsKey string,
@@ -476,7 +479,7 @@ func NewSetStreamSettingsRequest(
 	save bool,
 ) SetStreamSettingsRequest {
 	return SetStreamSettingsRequest{
-		_type,
+		Type_,
 		settings,
 		settingsServer,
 		settingsKey,
@@ -657,13 +660,13 @@ type GetStreamSettingsResponse struct {
 	SettingsKey string `json:"settings.key"`
 	// Indicates whether authentication should be used when connecting to the streaming server.
 	// Required: Yes.
-	SettingsUseAuth bool `json:"settings.use-auth"`
+	SettingsUseAuth bool `json:"settings.use_auth"`
 	// The username to use when accessing the streaming server.
-	// Only present if `use-auth` is `true`.
+	// Only present if `use_auth` is `true`.
 	// Required: Yes.
 	SettingsUsername string `json:"settings.username"`
 	// The password to use when accessing the streaming server.
-	// Only present if `use-auth` is `true`.
+	// Only present if `use_auth` is `true`.
 	// Required: Yes.
 	SettingsPassword string `json:"settings.password"`
 	_response        `json:",squash"`
@@ -757,7 +760,6 @@ type SaveStreamSettingsResponse struct {
 }
 
 // SendCaptionsRequest : Send the provided text as embedded CEA-608 caption data.
-// As of OBS Studio 23.1, captions are not yet available on Linux.
 //
 // Since obs-websocket version: 4.6.0.
 //
@@ -775,7 +777,7 @@ func NewSendCaptionsRequest(text string) SendCaptionsRequest {
 	return SendCaptionsRequest{
 		text,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "SendCaptions",
 			err:   make(chan error, 1),
 		},
@@ -788,7 +790,7 @@ func (r *SendCaptionsRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}

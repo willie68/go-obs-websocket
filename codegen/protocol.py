@@ -19,21 +19,34 @@ disclaimer = """
 type_map = {
     "bool": "bool",
     "boolean": "bool",
+    "boolean (optional)": "bool",
     "int": "int",
+    "int (optional)": "int",
     "integer": "int",
     "float": "float64",
     "double": "float64",
     "string": "string",
+    "string (optional)": "string",
+    "array<string>": "[]string",
     "array": "[]interface{}",
     "array<string>": "[]string",
     "object": "map[string]interface{}",
-    "output": "map[string]interface{}",
+    "object (optional)": "map[string]interface{}",
+    "array of objects": "[]map[string]interface{}",
     "array<object>": "[]map[string]interface{}",
     "array<output>": "[]map[string]interface{}",
-    "array<scene>": "[]*Scene",
-    "array<sceneitem>": "[]*SceneItem",
-    "obsstats": "*OBSStats",
-    "sceneitemtransform": "*SceneItemTransform",
+    "object|array": "interface{}",
+    "scene|array": "[]map[string]interface{}",
+    "array<scene>": "[]map[string]interface{}",
+    "source|array": "[]map[string]interface{}",
+    "array<source>": "[]map[string]interface{}",
+    "array<sceneitem>": "[]map[string]interface{}",
+    "array<sceneitemtransform>": "[]map[string]interface{}",
+    "array<scenescollection>": "[]map[string]interface{}",
+    "obsstats": "interface{}",
+    "output": "interface{}",
+    "sceneitemtransform": "interface{}",
+    "string | object": "interface{}",
 }
 
 unknown_types = []
@@ -60,12 +73,12 @@ def gen_category(prefix: str, category: str, data: Dict):
     with open(f"{prefix}_{category}.go".replace(" ", "_"), "w") as f:
         f.write(
             f"""
-        package {package}
+            package {package}
 
-        {disclaimer}
+            {disclaimer}
 
-        {content}
-        """
+            {content}
+            """
         )
 
 
@@ -290,17 +303,17 @@ def gen_event_utils(events: Dict):
     with open("event_utils.go", "w") as f:
         f.write(
             f"""
-        package {package}
+            package {package}
 
-        {disclaimer}
+            {disclaimer}
 
-        var eventMap = map[string]func() Event {{
-            {event_entries}
-        }}
+            var eventMap = map[string]func() Event {{
+                {event_entries}
+            }}
 
-        // derefEvent returns an Event struct from a pointer to an Event struct.
-        {deref}
-        """
+            // derefEvent returns an Event struct from a pointer to an Event struct.
+            {deref}
+            """
         )
 
 
@@ -313,9 +326,12 @@ def go_variables(variables: List[Dict], export: bool = True) -> str:
     for v in variables:
         typename, optional = optional_type(v["type"])
         varname = go_var(v["name"], export=export)
+        goname = varname
+        if varname == "type": goname = "Type_"
+        if varname == "Type": goname = "Type_"
         vardicts.append(
             {
-                "name": f"{'Type_' if varname == 'Type' else varname}",
+                "name": varname,
                 "type": type_map[typename.lower()],
                 "tag": f'`json:"{v["name"]}"`',
                 "description": v["description"].replace("\n", " "),
@@ -403,4 +419,4 @@ if __name__ == "__main__":
         d = json.load(f)
 
     process_json(d)
-    os.system("goimports -w *.go")
+    os.system("goimports -w ./")

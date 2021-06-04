@@ -105,7 +105,10 @@ type GetVersionResponse struct {
 	// List of available request types, formatted as a comma-separated list string (e.g. : "Method1,Method2,Method3").
 	// Required: Yes.
 	AvailableRequests string `json:"available-requests"`
-	_response         `json:",squash"`
+	// List of supported formats for features that use image export (like the TakeSourceScreenshot request type) formatted as a comma-separated list string.
+	// Required: Yes.
+	SupportedImageExportFormats string `json:"supported-image-export-formats"`
+	_response                   `json:",squash"`
 }
 
 // GetAuthRequiredRequest : Tells the client if authentication is required
@@ -581,7 +584,7 @@ type GetStatsRequest struct {
 func NewGetStatsRequest() GetStatsRequest {
 	return GetStatsRequest{
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "GetStats",
 			err:   make(chan error, 1),
 		},
@@ -594,7 +597,7 @@ func (r *GetStatsRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -651,9 +654,9 @@ func (r GetStatsRequest) SendReceive(c Client) (GetStatsResponse, error) {
 //
 // https://github.com/Palakis/obs-websocket/blob/4.x-current/docs/generated/protocol.md#getstats
 type GetStatsResponse struct {
-	// OBS stats.
+	// [OBS stats](#obsstats).
 	// Required: Yes.
-	Stats     *OBSStats `json:"stats"`
+	Stats     interface{} `json:"stats"`
 	_response `json:",squash"`
 }
 
@@ -682,7 +685,7 @@ func NewBroadcastCustomMessageRequest(
 		realm,
 		data,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "BroadcastCustomMessage",
 			err:   make(chan error, 1),
 		},
@@ -695,7 +698,7 @@ func (r *BroadcastCustomMessageRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -769,7 +772,7 @@ type GetVideoInfoRequest struct {
 func NewGetVideoInfoRequest() GetVideoInfoRequest {
 	return GetVideoInfoRequest{
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "GetVideoInfo",
 			err:   make(chan error, 1),
 		},
@@ -782,7 +785,7 @@ func (r *GetVideoInfoRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -867,4 +870,454 @@ type GetVideoInfoResponse struct {
 	// Required: Yes.
 	ColorRange string `json:"colorRange"`
 	_response  `json:",squash"`
+}
+
+// OpenProjectorRequest : Open a projector window or create a projector on a monitor
+// Requires OBS v24.0.4 or newer.
+//
+// Since obs-websocket version: 4.8.0.
+//
+// https://github.com/Palakis/obs-websocket/blob/4.x-current/docs/generated/protocol.md#openprojector
+type OpenProjectorRequest struct {
+	// Type of projector: `Preview` (default), `Source`, `Scene`, `StudioProgram`, or `Multiview` (case insensitive).
+	// Required: Yes.
+	Type_ string `json:"type"`
+	// Monitor to open the projector on.
+	// If -1 or omitted, opens a window.
+	// Required: Yes.
+	Monitor int `json:"monitor"`
+	// Size and position of the projector window (only if monitor is -1).
+	// Encoded in Base64 using [Qt's geometry encoding](https://doc.qt.io/qt-5/qwidget.html#saveGeometry).
+	// Corresponds to OBS's saved projectors.
+	// Required: Yes.
+	Geometry string `json:"geometry"`
+	// Name of the source or scene to be displayed (ignored for other projector types).
+	// Required: Yes.
+	Name     string `json:"name"`
+	_request `json:",squash"`
+	response chan OpenProjectorResponse
+}
+
+// NewOpenProjectorRequest returns a new OpenProjectorRequest.
+func NewOpenProjectorRequest(
+	Type_ string,
+	monitor int,
+	geometry string,
+	name string,
+) OpenProjectorRequest {
+	return OpenProjectorRequest{
+		Type_,
+		monitor,
+		geometry,
+		name,
+		_request{
+			ID_:   getMessageID(),
+			Type_: "OpenProjector",
+			err:   make(chan error, 1),
+		},
+		make(chan OpenProjectorResponse, 1),
+	}
+}
+
+// Send sends the request.
+func (r *OpenProjectorRequest) Send(c Client) error {
+	if r.sent {
+		return ErrAlreadySent
+	}
+	future, err := c.sendRequest(r)
+	if err != nil {
+		return err
+	}
+	r.sent = true
+	go func() {
+		m := <-future
+		var resp OpenProjectorResponse
+		if err = mapToStruct(m, &resp); err != nil {
+			r.err <- err
+		} else if resp.Status() != StatusOK {
+			r.err <- errors.New(resp.Error())
+		} else {
+			r.response <- resp
+		}
+	}()
+	return nil
+}
+
+// Receive waits for the response.
+func (r OpenProjectorRequest) Receive() (OpenProjectorResponse, error) {
+	if !r.sent {
+		return OpenProjectorResponse{}, ErrNotSent
+	}
+	if receiveTimeout == 0 {
+		select {
+		case resp := <-r.response:
+			return resp, nil
+		case err := <-r.err:
+			return OpenProjectorResponse{}, err
+		}
+	} else {
+		select {
+		case resp := <-r.response:
+			return resp, nil
+		case err := <-r.err:
+			return OpenProjectorResponse{}, err
+		case <-time.After(receiveTimeout):
+			return OpenProjectorResponse{}, ErrReceiveTimeout
+		}
+	}
+}
+
+// SendReceive sends the request then immediately waits for the response.
+func (r OpenProjectorRequest) SendReceive(c Client) (OpenProjectorResponse, error) {
+	if err := r.Send(c); err != nil {
+		return OpenProjectorResponse{}, err
+	}
+	return r.Receive()
+}
+
+// OpenProjectorResponse : Response for OpenProjectorRequest.
+//
+// Since obs-websocket version: 4.8.0.
+//
+// https://github.com/Palakis/obs-websocket/blob/4.x-current/docs/generated/protocol.md#openprojector
+type OpenProjectorResponse struct {
+	_response `json:",squash"`
+}
+
+// TriggerHotkeyByNameRequest : Executes hotkey routine, identified by hotkey unique name.
+//
+// Since obs-websocket version: 4.9.0.
+//
+// https://github.com/Palakis/obs-websocket/blob/4.x-current/docs/generated/protocol.md#triggerhotkeybyname
+type TriggerHotkeyByNameRequest struct {
+	// Unique name of the hotkey, as defined when registering the hotkey (e.g. "ReplayBuffer.Save").
+	// Required: Yes.
+	HotkeyName string `json:"hotkeyName"`
+	_request   `json:",squash"`
+	response   chan TriggerHotkeyByNameResponse
+}
+
+// NewTriggerHotkeyByNameRequest returns a new TriggerHotkeyByNameRequest.
+func NewTriggerHotkeyByNameRequest(hotkeyName string) TriggerHotkeyByNameRequest {
+	return TriggerHotkeyByNameRequest{
+		hotkeyName,
+		_request{
+			ID_:   getMessageID(),
+			Type_: "TriggerHotkeyByName",
+			err:   make(chan error, 1),
+		},
+		make(chan TriggerHotkeyByNameResponse, 1),
+	}
+}
+
+// Send sends the request.
+func (r *TriggerHotkeyByNameRequest) Send(c Client) error {
+	if r.sent {
+		return ErrAlreadySent
+	}
+	future, err := c.sendRequest(r)
+	if err != nil {
+		return err
+	}
+	r.sent = true
+	go func() {
+		m := <-future
+		var resp TriggerHotkeyByNameResponse
+		if err = mapToStruct(m, &resp); err != nil {
+			r.err <- err
+		} else if resp.Status() != StatusOK {
+			r.err <- errors.New(resp.Error())
+		} else {
+			r.response <- resp
+		}
+	}()
+	return nil
+}
+
+// Receive waits for the response.
+func (r TriggerHotkeyByNameRequest) Receive() (TriggerHotkeyByNameResponse, error) {
+	if !r.sent {
+		return TriggerHotkeyByNameResponse{}, ErrNotSent
+	}
+	if receiveTimeout == 0 {
+		select {
+		case resp := <-r.response:
+			return resp, nil
+		case err := <-r.err:
+			return TriggerHotkeyByNameResponse{}, err
+		}
+	} else {
+		select {
+		case resp := <-r.response:
+			return resp, nil
+		case err := <-r.err:
+			return TriggerHotkeyByNameResponse{}, err
+		case <-time.After(receiveTimeout):
+			return TriggerHotkeyByNameResponse{}, ErrReceiveTimeout
+		}
+	}
+}
+
+// SendReceive sends the request then immediately waits for the response.
+func (r TriggerHotkeyByNameRequest) SendReceive(c Client) (TriggerHotkeyByNameResponse, error) {
+	if err := r.Send(c); err != nil {
+		return TriggerHotkeyByNameResponse{}, err
+	}
+	return r.Receive()
+}
+
+// TriggerHotkeyByNameResponse : Response for TriggerHotkeyByNameRequest.
+//
+// Since obs-websocket version: 4.9.0.
+//
+// https://github.com/Palakis/obs-websocket/blob/4.x-current/docs/generated/protocol.md#triggerhotkeybyname
+type TriggerHotkeyByNameResponse struct {
+	_response `json:",squash"`
+}
+
+// TriggerHotkeyBySequenceRequest : Executes hotkey routine, identified by bound combination of keys
+// A single key combination might trigger multiple hotkey routines depending on user settings.
+//
+// Since obs-websocket version: 4.9.0.
+//
+// https://github.com/Palakis/obs-websocket/blob/4.x-current/docs/generated/protocol.md#triggerhotkeybysequence
+type TriggerHotkeyBySequenceRequest struct {
+	// Main key identifier (e.g. `OBS_KEY_A` for key "A").
+	// Available identifiers [here](https://github.com/obsproject/obs-studio/blob/master/libobs/obs-hotkeys.h).
+	// Required: Yes.
+	KeyID string `json:"keyId"`
+	// Optional key modifiers object.
+	// False entries can be ommitted.
+	// Required: Yes.
+	KeyModifiers map[string]interface{} `json:"keyModifiers"`
+	// Trigger Shift Key.
+	// Required: Yes.
+	KeyModifiersShift bool `json:"keyModifiers.shift"`
+	// Trigger Alt Key.
+	// Required: Yes.
+	KeyModifiersAlt bool `json:"keyModifiers.alt"`
+	// Trigger Control (Ctrl) Key.
+	// Required: Yes.
+	KeyModifiersControl bool `json:"keyModifiers.control"`
+	// Trigger Command Key (Mac).
+	// Required: Yes.
+	KeyModifiersCommand bool `json:"keyModifiers.command"`
+	_request            `json:",squash"`
+	response            chan TriggerHotkeyBySequenceResponse
+}
+
+// NewTriggerHotkeyBySequenceRequest returns a new TriggerHotkeyBySequenceRequest.
+func NewTriggerHotkeyBySequenceRequest(
+	keyID string,
+	keyModifiers map[string]interface{},
+	keyModifiersShift bool,
+	keyModifiersAlt bool,
+	keyModifiersControl bool,
+	keyModifiersCommand bool,
+) TriggerHotkeyBySequenceRequest {
+	return TriggerHotkeyBySequenceRequest{
+		keyID,
+		keyModifiers,
+		keyModifiersShift,
+		keyModifiersAlt,
+		keyModifiersControl,
+		keyModifiersCommand,
+		_request{
+			ID_:   getMessageID(),
+			Type_: "TriggerHotkeyBySequence",
+			err:   make(chan error, 1),
+		},
+		make(chan TriggerHotkeyBySequenceResponse, 1),
+	}
+}
+
+// Send sends the request.
+func (r *TriggerHotkeyBySequenceRequest) Send(c Client) error {
+	if r.sent {
+		return ErrAlreadySent
+	}
+	future, err := c.sendRequest(r)
+	if err != nil {
+		return err
+	}
+	r.sent = true
+	go func() {
+		m := <-future
+		var resp TriggerHotkeyBySequenceResponse
+		if err = mapToStruct(m, &resp); err != nil {
+			r.err <- err
+		} else if resp.Status() != StatusOK {
+			r.err <- errors.New(resp.Error())
+		} else {
+			r.response <- resp
+		}
+	}()
+	return nil
+}
+
+// Receive waits for the response.
+func (r TriggerHotkeyBySequenceRequest) Receive() (TriggerHotkeyBySequenceResponse, error) {
+	if !r.sent {
+		return TriggerHotkeyBySequenceResponse{}, ErrNotSent
+	}
+	if receiveTimeout == 0 {
+		select {
+		case resp := <-r.response:
+			return resp, nil
+		case err := <-r.err:
+			return TriggerHotkeyBySequenceResponse{}, err
+		}
+	} else {
+		select {
+		case resp := <-r.response:
+			return resp, nil
+		case err := <-r.err:
+			return TriggerHotkeyBySequenceResponse{}, err
+		case <-time.After(receiveTimeout):
+			return TriggerHotkeyBySequenceResponse{}, ErrReceiveTimeout
+		}
+	}
+}
+
+// SendReceive sends the request then immediately waits for the response.
+func (r TriggerHotkeyBySequenceRequest) SendReceive(c Client) (TriggerHotkeyBySequenceResponse, error) {
+	if err := r.Send(c); err != nil {
+		return TriggerHotkeyBySequenceResponse{}, err
+	}
+	return r.Receive()
+}
+
+// TriggerHotkeyBySequenceResponse : Response for TriggerHotkeyBySequenceRequest.
+//
+// Since obs-websocket version: 4.9.0.
+//
+// https://github.com/Palakis/obs-websocket/blob/4.x-current/docs/generated/protocol.md#triggerhotkeybysequence
+type TriggerHotkeyBySequenceResponse struct {
+	_response `json:",squash"`
+}
+
+// ExecuteBatchRequest : Executes a list of requests sequentially (one-by-one on the same thread).
+//
+// Since obs-websocket version: 4.9.0.
+//
+// https://github.com/Palakis/obs-websocket/blob/4.x-current/docs/generated/protocol.md#executebatch
+type ExecuteBatchRequest struct {
+	// Array of requests to perform.
+	// Executed in order.
+	// Required: Yes.
+	Requests []map[string]interface{} `json:"requests"`
+	// Request type.
+	// Eg.
+	// `GetVersion`.
+	// Required: Yes.
+	RequestsRequestType string `json:"requests.*.request-type"`
+	// ID of the individual request.
+	// Can be any string and not required to be unique.
+	// Defaults to empty string if not specified.
+	// Required: Yes.
+	RequestsMessageID string `json:"requests.*.message-id"`
+	// Stop processing batch requests if one returns a failure.
+	// Required: Yes.
+	AbortOnFail bool `json:"abortOnFail"`
+	_request    `json:",squash"`
+	response    chan ExecuteBatchResponse
+}
+
+// NewExecuteBatchRequest returns a new ExecuteBatchRequest.
+func NewExecuteBatchRequest(
+	requests []map[string]interface{},
+	requestsRequestType string,
+	requestsMessageID string,
+	abortOnFail bool,
+) ExecuteBatchRequest {
+	return ExecuteBatchRequest{
+		requests,
+		requestsRequestType,
+		requestsMessageID,
+		abortOnFail,
+		_request{
+			ID_:   getMessageID(),
+			Type_: "ExecuteBatch",
+			err:   make(chan error, 1),
+		},
+		make(chan ExecuteBatchResponse, 1),
+	}
+}
+
+// Send sends the request.
+func (r *ExecuteBatchRequest) Send(c Client) error {
+	if r.sent {
+		return ErrAlreadySent
+	}
+	future, err := c.sendRequest(r)
+	if err != nil {
+		return err
+	}
+	r.sent = true
+	go func() {
+		m := <-future
+		var resp ExecuteBatchResponse
+		if err = mapToStruct(m, &resp); err != nil {
+			r.err <- err
+		} else if resp.Status() != StatusOK {
+			r.err <- errors.New(resp.Error())
+		} else {
+			r.response <- resp
+		}
+	}()
+	return nil
+}
+
+// Receive waits for the response.
+func (r ExecuteBatchRequest) Receive() (ExecuteBatchResponse, error) {
+	if !r.sent {
+		return ExecuteBatchResponse{}, ErrNotSent
+	}
+	if receiveTimeout == 0 {
+		select {
+		case resp := <-r.response:
+			return resp, nil
+		case err := <-r.err:
+			return ExecuteBatchResponse{}, err
+		}
+	} else {
+		select {
+		case resp := <-r.response:
+			return resp, nil
+		case err := <-r.err:
+			return ExecuteBatchResponse{}, err
+		case <-time.After(receiveTimeout):
+			return ExecuteBatchResponse{}, ErrReceiveTimeout
+		}
+	}
+}
+
+// SendReceive sends the request then immediately waits for the response.
+func (r ExecuteBatchRequest) SendReceive(c Client) (ExecuteBatchResponse, error) {
+	if err := r.Send(c); err != nil {
+		return ExecuteBatchResponse{}, err
+	}
+	return r.Receive()
+}
+
+// ExecuteBatchResponse : Response for ExecuteBatchRequest.
+//
+// Since obs-websocket version: 4.9.0.
+//
+// https://github.com/Palakis/obs-websocket/blob/4.x-current/docs/generated/protocol.md#executebatch
+type ExecuteBatchResponse struct {
+	// Batch requests results, ordered sequentially.
+	// Required: Yes.
+	Results []map[string]interface{} `json:"results"`
+	// ID of the individual request which was originally provided by the client.
+	// Required: Yes.
+	ResultsMessageID string `json:"results.*.message-id"`
+	// Status response as string.
+	// Either `ok` or `error`.
+	// Required: Yes.
+	ResultsStatus string `json:"results.*.status"`
+	// Error message accompanying an `error` status.
+	// Required: Yes.
+	ResultsError string `json:"results.*.error"`
+	_response    `json:",squash"`
 }

@@ -275,6 +275,6 @@ func (r ListSceneCollectionsRequest) SendReceive(c Client) (ListSceneCollections
 type ListSceneCollectionsResponse struct {
 	// Scene collections list.
 	// Required: Yes.
-	SceneCollections []string `json:"scene-collections"`
+	SceneCollections []map[string]interface{} `json:"scene-collections"`
 	_response        `json:",squash"`
 }

@@ -22,7 +22,7 @@ type GetStreamingStatusRequest struct {
 func NewGetStreamingStatusRequest() GetStreamingStatusRequest {
 	return GetStreamingStatusRequest{
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "GetStreamingStatus",
 			err:   make(chan error, 1),
 		},
@@ -35,7 +35,7 @@ func (r *GetStreamingStatusRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -128,7 +128,7 @@ type StartStopStreamingRequest struct {
 func NewStartStopStreamingRequest() StartStopStreamingRequest {
 	return StartStopStreamingRequest{
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "StartStopStreaming",
 			err:   make(chan error, 1),
 		},
@@ -141,7 +141,7 @@ func (r *StartStopStreamingRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -268,7 +268,7 @@ func NewStartStreamingRequest(
 		streamSettingsUsername,
 		streamSettingsPassword,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "StartStreaming",
 			err:   make(chan error, 1),
 		},
@@ -281,7 +281,7 @@ func (r *StartStreamingRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -356,7 +356,7 @@ type StopStreamingRequest struct {
 func NewStopStreamingRequest() StopStreamingRequest {
 	return StopStreamingRequest{
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "StopStreaming",
 			err:   make(chan error, 1),
 		},
@@ -369,7 +369,7 @@ func (r *StopStreamingRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -488,7 +488,7 @@ func NewSetStreamSettingsRequest(
 		settingsPassword,
 		save,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "SetStreamSettings",
 			err:   make(chan error, 1),
 		},
@@ -501,7 +501,7 @@ func (r *SetStreamSettingsRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -575,7 +575,7 @@ type GetStreamSettingsRequest struct {
 func NewGetStreamSettingsRequest() GetStreamSettingsRequest {
 	return GetStreamSettingsRequest{
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "GetStreamSettings",
 			err:   make(chan error, 1),
 		},
@@ -588,7 +588,7 @@ func (r *GetStreamSettingsRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -686,7 +686,7 @@ type SaveStreamSettingsRequest struct {
 func NewSaveStreamSettingsRequest() SaveStreamSettingsRequest {
 	return SaveStreamSettingsRequest{
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "SaveStreamSettings",
 			err:   make(chan error, 1),
 		},
@@ -699,7 +699,7 @@ func (r *SaveStreamSettingsRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}

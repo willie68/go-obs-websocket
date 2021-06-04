@@ -26,7 +26,7 @@ func NewSetCurrentSceneCollectionRequest(scName string) SetCurrentSceneCollectio
 	return SetCurrentSceneCollectionRequest{
 		scName,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "SetCurrentSceneCollection",
 			err:   make(chan error, 1),
 		},
@@ -39,7 +39,7 @@ func (r *SetCurrentSceneCollectionRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -113,7 +113,7 @@ type GetCurrentSceneCollectionRequest struct {
 func NewGetCurrentSceneCollectionRequest() GetCurrentSceneCollectionRequest {
 	return GetCurrentSceneCollectionRequest{
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "GetCurrentSceneCollection",
 			err:   make(chan error, 1),
 		},
@@ -126,7 +126,7 @@ func (r *GetCurrentSceneCollectionRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -203,7 +203,7 @@ type ListSceneCollectionsRequest struct {
 func NewListSceneCollectionsRequest() ListSceneCollectionsRequest {
 	return ListSceneCollectionsRequest{
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "ListSceneCollections",
 			err:   make(chan error, 1),
 		},
@@ -216,7 +216,7 @@ func (r *ListSceneCollectionsRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}

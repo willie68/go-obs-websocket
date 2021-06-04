@@ -240,7 +240,7 @@ type GetSourcesListRequest struct {
 func NewGetSourcesListRequest() GetSourcesListRequest {
 	return GetSourcesListRequest{
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "GetSourcesList",
 			err:   make(chan error, 1),
 		},
@@ -253,7 +253,7 @@ func (r *GetSourcesListRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -353,7 +353,7 @@ func (r *GetSourceTypesListRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -479,7 +479,7 @@ func NewGetVolumeRequest(
 		source,
 		useDecibel,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "GetVolume",
 			err:   make(chan error, 1),
 		},
@@ -492,7 +492,7 @@ func (r *GetVolumeRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -596,7 +596,7 @@ func NewSetVolumeRequest(
 		volume,
 		useDecibel,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "SetVolume",
 			err:   make(chan error, 1),
 		},
@@ -609,7 +609,7 @@ func (r *SetVolumeRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -687,7 +687,7 @@ func NewGetMuteRequest(source string) GetMuteRequest {
 	return GetMuteRequest{
 		source,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "GetMute",
 			err:   make(chan error, 1),
 		},
@@ -700,7 +700,7 @@ func (r *GetMuteRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -791,7 +791,7 @@ func NewSetMuteRequest(
 		source,
 		mute,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "SetMute",
 			err:   make(chan error, 1),
 		},
@@ -804,7 +804,7 @@ func (r *SetMuteRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -882,7 +882,7 @@ func NewToggleMuteRequest(source string) ToggleMuteRequest {
 	return ToggleMuteRequest{
 		source,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "ToggleMute",
 			err:   make(chan error, 1),
 		},
@@ -895,7 +895,7 @@ func (r *ToggleMuteRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -1174,7 +1174,7 @@ func NewSetSyncOffsetRequest(
 		source,
 		offset,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "SetSyncOffset",
 			err:   make(chan error, 1),
 		},
@@ -1187,7 +1187,7 @@ func (r *SetSyncOffsetRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -1265,7 +1265,7 @@ func NewGetSyncOffsetRequest(source string) GetSyncOffsetRequest {
 	return GetSyncOffsetRequest{
 		source,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "GetSyncOffset",
 			err:   make(chan error, 1),
 		},
@@ -1278,7 +1278,7 @@ func (r *GetSyncOffsetRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -1370,7 +1370,7 @@ func NewGetSourceSettingsRequest(
 		sourceName,
 		sourceType,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "GetSourceSettings",
 			err:   make(chan error, 1),
 		},
@@ -1383,7 +1383,7 @@ func (r *GetSourceSettingsRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -1483,7 +1483,7 @@ func NewSetSourceSettingsRequest(
 		sourceType,
 		sourceSettings,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "SetSourceSettings",
 			err:   make(chan error, 1),
 		},
@@ -1496,7 +1496,7 @@ func (r *SetSourceSettingsRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -1583,7 +1583,7 @@ func NewGetTextGDIPlusPropertiesRequest(source string) GetTextGDIPlusPropertiesR
 	return GetTextGDIPlusPropertiesRequest{
 		source,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "GetTextGDIPlusProperties",
 			err:   make(chan error, 1),
 		},
@@ -1596,7 +1596,7 @@ func (r *GetTextGDIPlusPropertiesRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -1904,7 +1904,7 @@ func NewSetTextGDIPlusPropertiesRequest(
 		vertical,
 		render,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "SetTextGDIPlusProperties",
 			err:   make(chan error, 1),
 		},
@@ -1917,7 +1917,7 @@ func (r *SetTextGDIPlusPropertiesRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -2008,7 +2008,7 @@ func (r *GetTextFreetype2PropertiesRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -2228,7 +2228,7 @@ func (r *SetTextFreetype2PropertiesRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -2319,7 +2319,7 @@ func (r *GetBrowserSourcePropertiesRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -2484,7 +2484,7 @@ func (r *SetBrowserSourcePropertiesRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -2558,7 +2558,7 @@ type GetSpecialSourcesRequest struct {
 func NewGetSpecialSourcesRequest() GetSpecialSourcesRequest {
 	return GetSpecialSourcesRequest{
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "GetSpecialSources",
 			err:   make(chan error, 1),
 		},
@@ -2571,7 +2571,7 @@ func (r *GetSpecialSourcesRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -2664,7 +2664,7 @@ func NewGetSourceFiltersRequest(sourceName string) GetSourceFiltersRequest {
 	return GetSourceFiltersRequest{
 		sourceName,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "GetSourceFilters",
 			err:   make(chan error, 1),
 		},
@@ -2677,7 +2677,7 @@ func (r *GetSourceFiltersRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -2898,7 +2898,7 @@ func NewAddFilterToSourceRequest(
 		filterType,
 		filterSettings,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "AddFilterToSource",
 			err:   make(chan error, 1),
 		},
@@ -2911,7 +2911,7 @@ func (r *AddFilterToSourceRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -2996,7 +2996,7 @@ func NewRemoveFilterFromSourceRequest(
 		sourceName,
 		filterName,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "RemoveFilterFromSource",
 			err:   make(chan error, 1),
 		},
@@ -3009,7 +3009,7 @@ func (r *RemoveFilterFromSourceRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -3099,7 +3099,7 @@ func NewReorderSourceFilterRequest(
 		filterName,
 		newIndex,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "ReorderSourceFilter",
 			err:   make(chan error, 1),
 		},
@@ -3112,7 +3112,7 @@ func (r *ReorderSourceFilterRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -3203,7 +3203,7 @@ func NewMoveSourceFilterRequest(
 		filterName,
 		movementType,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "MoveSourceFilter",
 			err:   make(chan error, 1),
 		},
@@ -3216,7 +3216,7 @@ func (r *MoveSourceFilterRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -3307,7 +3307,7 @@ func NewSetSourceFilterSettingsRequest(
 		filterName,
 		filterSettings,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "SetSourceFilterSettings",
 			err:   make(chan error, 1),
 		},
@@ -3320,7 +3320,7 @@ func (r *SetSourceFilterSettingsRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}

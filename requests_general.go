@@ -22,7 +22,7 @@ type GetVersionRequest struct {
 func NewGetVersionRequest() GetVersionRequest {
 	return GetVersionRequest{
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "GetVersion",
 			err:   make(chan error, 1),
 		},
@@ -35,7 +35,7 @@ func (r *GetVersionRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -127,7 +127,7 @@ type GetAuthRequiredRequest struct {
 func NewGetAuthRequiredRequest() GetAuthRequiredRequest {
 	return GetAuthRequiredRequest{
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "GetAuthRequired",
 			err:   make(chan error, 1),
 		},
@@ -140,7 +140,7 @@ func (r *GetAuthRequiredRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -225,7 +225,7 @@ func NewAuthenticateRequest(auth string) AuthenticateRequest {
 	return AuthenticateRequest{
 		auth,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "Authenticate",
 			err:   make(chan error, 1),
 		},
@@ -238,7 +238,7 @@ func (r *AuthenticateRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -316,7 +316,7 @@ func NewSetHeartbeatRequest(enable bool) SetHeartbeatRequest {
 	return SetHeartbeatRequest{
 		enable,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "SetHeartbeat",
 			err:   make(chan error, 1),
 		},
@@ -329,7 +329,7 @@ func (r *SetHeartbeatRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -407,7 +407,7 @@ func NewSetFilenameFormattingRequest(filenameFormatting string) SetFilenameForma
 	return SetFilenameFormattingRequest{
 		filenameFormatting,
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "SetFilenameFormatting",
 			err:   make(chan error, 1),
 		},
@@ -420,7 +420,7 @@ func (r *SetFilenameFormattingRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}
@@ -494,7 +494,7 @@ type GetFilenameFormattingRequest struct {
 func NewGetFilenameFormattingRequest() GetFilenameFormattingRequest {
 	return GetFilenameFormattingRequest{
 		_request{
-			ID_:   GetMessageID(),
+			ID_:   getMessageID(),
 			Type_: "GetFilenameFormatting",
 			err:   make(chan error, 1),
 		},
@@ -507,7 +507,7 @@ func (r *GetFilenameFormattingRequest) Send(c Client) error {
 	if r.sent {
 		return ErrAlreadySent
 	}
-	future, err := c.SendRequest(r)
+	future, err := c.sendRequest(r)
 	if err != nil {
 		return err
 	}

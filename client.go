@@ -66,8 +66,8 @@ func SetReceiveTimeout(timeout time.Duration) {
 	receiveTimeout = timeout
 }
 
-// GetMessageID generates a string that the client has not yet used.
-func GetMessageID() string {
+// getMessageID generates a string that the client has not yet used.
+func getMessageID() string {
 	lock.Lock()
 	messageID++
 	id := strconv.Itoa(messageID)

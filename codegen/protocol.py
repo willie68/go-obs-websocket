@@ -29,7 +29,6 @@ type_map = {
     "string (optional)": "string",
     "array<string>": "[]string",
     "array": "[]interface{}",
-    "array<string>": "[]string",
     "object": "map[string]interface{}",
     "object (optional)": "map[string]interface{}",
     "array of objects": "[]map[string]interface{}",
@@ -150,7 +149,7 @@ def gen_request(data: Dict) -> str:
         if r.sent {{
             return ErrAlreadySent
         }}
-        future, err := c.SendRequest(r)
+        future, err := c.sendRequest(r)
         if err != nil {{
             return err
         }}
@@ -239,7 +238,7 @@ def gen_request_new(request: Dict):
     variables = go_variables(request.get("params", []), export=False)
     default_args = f"""
         _request{{
-            ID_: GetMessageID(),
+            ID_: getMessageID(),
             Type_: "{request["name"]}",
             err: make(chan error, 1),
         }},
@@ -331,7 +330,7 @@ def go_variables(variables: List[Dict], export: bool = True) -> str:
         if varname == "Type": goname = "Type_"
         vardicts.append(
             {
-                "name": varname,
+                "name": goname,
                 "type": type_map[typename.lower()],
                 "tag": f'`json:"{v["name"]}"`',
                 "description": v["description"].replace("\n", " "),

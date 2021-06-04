@@ -68,21 +68,3 @@ type RecordingPausedEvent struct {
 type RecordingResumedEvent struct {
 	_event `json:",squash"`
 }
-
-// RecordingPausedEvent : Current recording paused.
-//
-// Since obs-websocket version: 4.7.0.
-//
-// https://github.com/Palakis/obs-websocket/blob/4.x-current/docs/generated/protocol.md#recordingpaused
-type RecordingPausedEvent struct {
-	_event `json:",squash"`
-}
-
-// RecordingResumedEvent : Current recording resumed.
-//
-// Since obs-websocket version: 4.7.0.
-//
-// https://github.com/Palakis/obs-websocket/blob/4.x-current/docs/generated/protocol.md#recordingresumed
-type RecordingResumedEvent struct {
-	_event `json:",squash"`
-}

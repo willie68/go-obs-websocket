@@ -4,37 +4,67 @@ package obsws
 // https://github.com/christopher-dG/go-obs-websocket/blob/master/codegen/protocol.py
 
 var eventMap = map[string]func() Event{
-	"SwitchScenes":               func() Event { return &SwitchScenesEvent{} },
-	"ScenesChanged":              func() Event { return &ScenesChangedEvent{} },
-	"SceneCollectionChanged":     func() Event { return &SceneCollectionChangedEvent{} },
-	"SceneCollectionListChanged": func() Event { return &SceneCollectionListChangedEvent{} },
-	"SwitchTransition":           func() Event { return &SwitchTransitionEvent{} },
-	"TransitionListChanged":      func() Event { return &TransitionListChangedEvent{} },
-	"TransitionDurationChanged":  func() Event { return &TransitionDurationChangedEvent{} },
-	"TransitionBegin":            func() Event { return &TransitionBeginEvent{} },
-	"ProfileChanged":             func() Event { return &ProfileChangedEvent{} },
-	"ProfileListChanged":         func() Event { return &ProfileListChangedEvent{} },
-	"StreamStarting":             func() Event { return &StreamStartingEvent{} },
-	"StreamStarted":              func() Event { return &StreamStartedEvent{} },
-	"StreamStopping":             func() Event { return &StreamStoppingEvent{} },
-	"StreamStopped":              func() Event { return &StreamStoppedEvent{} },
-	"StreamStatus":               func() Event { return &StreamStatusEvent{} },
-	"RecordingStarting":          func() Event { return &RecordingStartingEvent{} },
-	"RecordingStarted":           func() Event { return &RecordingStartedEvent{} },
-	"RecordingStopping":          func() Event { return &RecordingStoppingEvent{} },
-	"RecordingStopped":           func() Event { return &RecordingStoppedEvent{} },
-	"ReplayStarting":             func() Event { return &ReplayStartingEvent{} },
-	"ReplayStarted":              func() Event { return &ReplayStartedEvent{} },
-	"ReplayStopping":             func() Event { return &ReplayStoppingEvent{} },
-	"ReplayStopped":              func() Event { return &ReplayStoppedEvent{} },
-	"Exiting":                    func() Event { return &ExitingEvent{} },
-	"Heartbeat":                  func() Event { return &HeartbeatEvent{} },
-	"SourceOrderChanged":         func() Event { return &SourceOrderChangedEvent{} },
-	"SceneItemAdded":             func() Event { return &SceneItemAddedEvent{} },
-	"SceneItemRemoved":           func() Event { return &SceneItemRemovedEvent{} },
-	"SceneItemVisibilityChanged": func() Event { return &SceneItemVisibilityChangedEvent{} },
-	"PreviewSceneChanged":        func() Event { return &PreviewSceneChangedEvent{} },
-	"StudioModeSwitched":         func() Event { return &StudioModeSwitchedEvent{} },
+	"SwitchScenes":                  func() Event { return &SwitchScenesEvent{} },
+	"ScenesChanged":                 func() Event { return &ScenesChangedEvent{} },
+	"SceneCollectionChanged":        func() Event { return &SceneCollectionChangedEvent{} },
+	"SceneCollectionListChanged":    func() Event { return &SceneCollectionListChangedEvent{} },
+	"SwitchTransition":              func() Event { return &SwitchTransitionEvent{} },
+	"TransitionListChanged":         func() Event { return &TransitionListChangedEvent{} },
+	"TransitionDurationChanged":     func() Event { return &TransitionDurationChangedEvent{} },
+	"TransitionBegin":               func() Event { return &TransitionBeginEvent{} },
+	"TransitionEnd":                 func() Event { return &TransitionEndEvent{} },
+	"TransitionVideoEnd":            func() Event { return &TransitionVideoEndEvent{} },
+	"ProfileChanged":                func() Event { return &ProfileChangedEvent{} },
+	"ProfileListChanged":            func() Event { return &ProfileListChangedEvent{} },
+	"StreamStarting":                func() Event { return &StreamStartingEvent{} },
+	"StreamStarted":                 func() Event { return &StreamStartedEvent{} },
+	"StreamStopping":                func() Event { return &StreamStoppingEvent{} },
+	"StreamStopped":                 func() Event { return &StreamStoppedEvent{} },
+	"StreamStatus":                  func() Event { return &StreamStatusEvent{} },
+	"RecordingStarting":             func() Event { return &RecordingStartingEvent{} },
+	"RecordingStarted":              func() Event { return &RecordingStartedEvent{} },
+	"RecordingStopping":             func() Event { return &RecordingStoppingEvent{} },
+	"RecordingStopped":              func() Event { return &RecordingStoppedEvent{} },
+	"RecordingPaused":               func() Event { return &RecordingPausedEvent{} },
+	"RecordingResumed":              func() Event { return &RecordingResumedEvent{} },
+	"ReplayStarting":                func() Event { return &ReplayStartingEvent{} },
+	"ReplayStarted":                 func() Event { return &ReplayStartedEvent{} },
+	"ReplayStopping":                func() Event { return &ReplayStoppingEvent{} },
+	"ReplayStopped":                 func() Event { return &ReplayStoppedEvent{} },
+	"Exiting":                       func() Event { return &ExitingEvent{} },
+	"Heartbeat":                     func() Event { return &HeartbeatEvent{} },
+	"BroadcastCustomMessage":        func() Event { return &BroadcastCustomMessageEvent{} },
+	"SourceCreated":                 func() Event { return &SourceCreatedEvent{} },
+	"SourceDestroyed":               func() Event { return &SourceDestroyedEvent{} },
+	"SourceVolumeChanged":           func() Event { return &SourceVolumeChangedEvent{} },
+	"SourceMuteStateChanged":        func() Event { return &SourceMuteStateChangedEvent{} },
+	"SourceAudioDeactivated":        func() Event { return &SourceAudioDeactivatedEvent{} },
+	"SourceAudioActivated":          func() Event { return &SourceAudioActivatedEvent{} },
+	"SourceAudioSyncOffsetChanged":  func() Event { return &SourceAudioSyncOffsetChangedEvent{} },
+	"SourceAudioMixersChanged":      func() Event { return &SourceAudioMixersChangedEvent{} },
+	"SourceRenamed":                 func() Event { return &SourceRenamedEvent{} },
+	"SourceFilterAdded":             func() Event { return &SourceFilterAddedEvent{} },
+	"SourceFilterRemoved":           func() Event { return &SourceFilterRemovedEvent{} },
+	"SourceFilterVisibilityChanged": func() Event { return &SourceFilterVisibilityChangedEvent{} },
+	"SourceFiltersReordered":        func() Event { return &SourceFiltersReorderedEvent{} },
+	"MediaPlaying":                  func() Event { return &MediaPlayingEvent{} },
+	"MediaPaused":                   func() Event { return &MediaPausedEvent{} },
+	"MediaRestarted":                func() Event { return &MediaRestartedEvent{} },
+	"MediaStopped":                  func() Event { return &MediaStoppedEvent{} },
+	"MediaNext":                     func() Event { return &MediaNextEvent{} },
+	"MediaPrevious":                 func() Event { return &MediaPreviousEvent{} },
+	"MediaStarted":                  func() Event { return &MediaStartedEvent{} },
+	"MediaEnded":                    func() Event { return &MediaEndedEvent{} },
+	"SourceOrderChanged":            func() Event { return &SourceOrderChangedEvent{} },
+	"SceneItemAdded":                func() Event { return &SceneItemAddedEvent{} },
+	"SceneItemRemoved":              func() Event { return &SceneItemRemovedEvent{} },
+	"SceneItemVisibilityChanged":    func() Event { return &SceneItemVisibilityChangedEvent{} },
+	"SceneItemLockChanged":          func() Event { return &SceneItemLockChangedEvent{} },
+	"SceneItemTransformChanged":     func() Event { return &SceneItemTransformChangedEvent{} },
+	"SceneItemSelected":             func() Event { return &SceneItemSelectedEvent{} },
+	"SceneItemDeselected":           func() Event { return &SceneItemDeselectedEvent{} },
+	"PreviewSceneChanged":           func() Event { return &PreviewSceneChangedEvent{} },
+	"StudioModeSwitched":            func() Event { return &StudioModeSwitchedEvent{} },
 }
 
 // derefEvent returns an Event struct from a pointer to an Event struct.
@@ -56,6 +86,10 @@ func derefEvent(e Event) Event {
 	case *TransitionDurationChangedEvent:
 		return *e
 	case *TransitionBeginEvent:
+		return *e
+	case *TransitionEndEvent:
+		return *e
+	case *TransitionVideoEndEvent:
 		return *e
 	case *ProfileChangedEvent:
 		return *e
@@ -79,6 +113,10 @@ func derefEvent(e Event) Event {
 		return *e
 	case *RecordingStoppedEvent:
 		return *e
+	case *RecordingPausedEvent:
+		return *e
+	case *RecordingResumedEvent:
+		return *e
 	case *ReplayStartingEvent:
 		return *e
 	case *ReplayStartedEvent:
@@ -91,6 +129,50 @@ func derefEvent(e Event) Event {
 		return *e
 	case *HeartbeatEvent:
 		return *e
+	case *BroadcastCustomMessageEvent:
+		return *e
+	case *SourceCreatedEvent:
+		return *e
+	case *SourceDestroyedEvent:
+		return *e
+	case *SourceVolumeChangedEvent:
+		return *e
+	case *SourceMuteStateChangedEvent:
+		return *e
+	case *SourceAudioDeactivatedEvent:
+		return *e
+	case *SourceAudioActivatedEvent:
+		return *e
+	case *SourceAudioSyncOffsetChangedEvent:
+		return *e
+	case *SourceAudioMixersChangedEvent:
+		return *e
+	case *SourceRenamedEvent:
+		return *e
+	case *SourceFilterAddedEvent:
+		return *e
+	case *SourceFilterRemovedEvent:
+		return *e
+	case *SourceFilterVisibilityChangedEvent:
+		return *e
+	case *SourceFiltersReorderedEvent:
+		return *e
+	case *MediaPlayingEvent:
+		return *e
+	case *MediaPausedEvent:
+		return *e
+	case *MediaRestartedEvent:
+		return *e
+	case *MediaStoppedEvent:
+		return *e
+	case *MediaNextEvent:
+		return *e
+	case *MediaPreviousEvent:
+		return *e
+	case *MediaStartedEvent:
+		return *e
+	case *MediaEndedEvent:
+		return *e
 	case *SourceOrderChangedEvent:
 		return *e
 	case *SceneItemAddedEvent:
@@ -98,6 +180,14 @@ func derefEvent(e Event) Event {
 	case *SceneItemRemovedEvent:
 		return *e
 	case *SceneItemVisibilityChangedEvent:
+		return *e
+	case *SceneItemLockChangedEvent:
+		return *e
+	case *SceneItemTransformChangedEvent:
+		return *e
+	case *SceneItemSelectedEvent:
+		return *e
+	case *SceneItemDeselectedEvent:
 		return *e
 	case *PreviewSceneChangedEvent:
 		return *e
